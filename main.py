@@ -20,8 +20,22 @@ def add_pasta(l, c):
     print(c)
     return None
 
+def review_order(c):
+    print(c)
+    print("")
+    total = 0
+    for x in c:
+        print(x)
+        sub_total = x[1]*x[2]
+        print("The sub-total for this section is ${}".format(sub_total))
+        total += sub_total
+    print("----------------")
+    print("The total price for your order is${}".format(total))
+    print("")
+
 def main():
     customer_order = []
+    #customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
 
     pasta_list = [
         ["Linguine Gamberi", 23],
@@ -36,8 +50,9 @@ def main():
     ]
 
     option_list = [
-        ["R", "Review the menu"],
+        ["P", "Print the menu"],
         ["A", "Add pasta to order"],
+        ["R", "Review customer order"],
         ["S", "Stop program"]
         ]
 
@@ -49,10 +64,12 @@ def main():
             print(output)
         user_choice = get_string("Please select an option: ->").upper()
         print(user_choice)
-        if user_choice == "R":
+        if user_choice == "P":
             print(print_with_indexes(pasta_list))
         elif user_choice == "A":
             add_pasta(pasta_list, customer_order)
+        elif user_choice == "R":
+            review_order(customer_order)
         elif user_choice == "S":
             exit(0)
     print("Thank you, the program has ended")
