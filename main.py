@@ -11,6 +11,11 @@ def print_with_indexes(l):
         output = " {:3} : {:10} : {:3}".format(i, l[i][0], l[i][1])
         print(output)
 
+def print_customer_list_indexes(c):
+    for i in range (0, len(c)):
+        output = " {:3} : {:10} : {:3} : ${:3}".format(i, c[i][0], c[i][1], c[i][2])
+        print(output)
+
 def add_pasta(l, c):
     print_with_indexes(l)
     pasta_index = get_integer("Please enter the option number of pasta you want: ")
@@ -33,9 +38,48 @@ def review_order(c):
     print("The total price for your order is${}".format(total))
     print("")
 
+#def subtract_pasta(c):
+   # print(print_customer_list_indexes(c))
+   # pasta_index = get_integer("Which pasta index would you like to subtract from: ->")
+   # print(c[pasta_index][0], c[pasta_index][1])
+   # print("You currently have ordered {} {} on the order".format(c[pasta_index][1], c[pasta_index][0])
+    #print("How many {} would you like to remove from the customer order".format(c[pasta_index][0]))
+
+def subtract_pasta(c):
+    print_customer_list_indexes(c)
+    my_index = get_integer("Choose index number to update the fruit quantity")
+    print()
+    old_amount = c[my_index][1]
+    number = get_integer("Enter how many you would like to remove:")
+    print()
+    new_amount = old_amount - number
+    print("{} - {} = {} left in the bowl".format(old_amount, number, new_amount))
+    print()
+    output_message = "The number of {} {} has been updated to {}.".format(old_amount, c[my_index][0], new_amount)
+    print(output_message)
+
+    #if pasta_index in c:
+       # c.remove(pasta_index)
+        #output = "{} has been removed from the customer order".format(pasta_index)
+        #print(output)
+    #else:
+        #output = "{} can not be found, so it is not in the list".format(pasta_index)
+        #print(output)
+
+def edit_order(l):
+    print_with_indexes(l)
+    user_choice = get_integer("PLease enter the index number to update the name: ")
+    #print(L[my_index])
+    new_pasta = get_integer("Please enter the new quantity of fruit: ")
+    old_pasta = l[user_choice][1]
+    l[user_choice][1] = new_pasta
+    #print(l [my_index][1])
+    output_message = "{} many has now been changed to {}".format(old_pasta, new_pasta)
+    print(output_message)
+
 def main():
-    customer_order = []
-    #customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
+    #customer_order = []
+    customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
 
     pasta_list = [
         ["Linguine Gamberi", 23],
@@ -53,6 +97,8 @@ def main():
         ["P", "Print the menu"],
         ["A", "Add pasta to order"],
         ["R", "Review customer order"],
+        ["D", "Delete item from customer list"],
+        ["E", "Edit order"],
         ["S", "Stop program"]
         ]
 
@@ -70,6 +116,10 @@ def main():
             add_pasta(pasta_list, customer_order)
         elif user_choice == "R":
             review_order(customer_order)
+        elif user_choice == "D":
+            subtract_pasta(customer_order)
+        elif user_choice == "E":
+            edit_order(customer_order)
         elif user_choice == "S":
             exit(0)
     print("Thank you, the program has ended")
