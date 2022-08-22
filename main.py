@@ -4,31 +4,49 @@ def get_integer(m, min_length, max_length):
         my_integer_question = input(m)
         try:
             my_integer = int(my_integer_question)
+            # add in validation for mininum and maximum integer length
             if len(my_integer_question) < min_length or len(my_integer_question) > max_length:
+                # print error message saying they have too long or too short in length
                 print(f'The number is less than {min_length} or longer than {max_length}')
             else:
                 break
         except Exception as error:
+            # print error message for entering a character instead of an integer
             print('You entered in an invalid character/s')
 
     return my_integer
 
+#
 def get_string(m, *length):
     my_string = ""
+    #
     while True:
         my_string = input(m)
         if len(length) == 0:
             break
+        # put in minimum and maximum length
         if len(length) > 0 and len(my_string) >= length[0]:
             if len(length) > 1 and length[1]:
                 if my_string.upper() in length[1]:
-                    # print('Value Found')
+                    # If they have
                     break
                 else:
+                    # error message
                     print('Wrong Value')
             else:
                 break
     return my_string
+
+def integer_in_array(c, question, min_length, max_length):
+    while True:
+        my_index = get_integer(question, min_length, max_length)
+        # check if index is less than index in the list
+        if len(c) < my_index:
+            # print error message
+            print("You entered an integer out of range, please enter a new integer")
+        else:
+            # if integer in the list then carry on
+            return my_index
 
 def print_with_indexes(l):
     for i in range (0, len(l)):
@@ -42,8 +60,8 @@ def print_customer_list_indexes(c):
 
 def add_pasta(l, c):
     print_with_indexes(l)
-    pasta_index = get_integer("Please enter the option number of pasta you want: ")
-    pasta_quantity = get_integer("Please enter the quantity: ")
+    pasta_index = integer_in_array(c, "Please enter the option number of pasta you want: ", 1, 1)
+    pasta_quantity = integer_in_array(c, "Please enter the quantity: ", 1, 5)
     customer_order = [l[pasta_index][0], pasta_quantity, l[pasta_index][1]]
     c.append(customer_order)
     print_customer_list_indexes(c)
@@ -66,23 +84,28 @@ def review_order(c):
 
 def subtract_pasta(c):
     print_customer_list_indexes(c)
-    my_index = get_integer("Choose index number to update the pasta quantity")
+    my_index = integer_in_array(c, "Choose index number to update the pasta quantity", 1, 1)
     print()
     old_amount = c[my_index][1]
-    number = get_integer("Enter how many you would like to remove:")
+    while True:
+        number = get_integer("Enter how many you would like to remove:", 1, old_amount)
+        if number > old_amount:
+            print("Invalid number, you are unable to get rid of more pastas than you have ordered")
+        else:
+            break
     print()
     new_amount = old_amount - number
-    print("{} - {} = {} left in the order".format(old_amount, number, new_amount))
+    print("{} - {} = {}, there are {} left in the order".format(old_amount, number, new_amount, new_amount))
     print()
     output_message = "The number of {} {} has been updated to {}.".format(old_amount, c[my_index][0], new_amount)
     print(output_message)
 
-
+# edit the order function
 def edit_order(l):
     print_with_indexes(l)
-    user_choice = get_integer("Please enter the index number to update the name: ")
+    user_choice = get_integer("Please enter the index number to update the name: ", 1, 1)
     #print(L[my_index])
-    new_pasta = get_integer("Please enter the new quantity of pasta: ")
+    new_pasta = get_integer("Please enter the new quantity of pasta(max of 5): ", 1, 5)
     old_pasta = l[user_choice][1]
     l[user_choice][1] = new_pasta
     #print(l [my_index][1])
@@ -97,7 +120,7 @@ def pickup_or_delivery(p, c):
         p.append(['pickup', name, phone_number])
     elif p_d == "D":
         name = get_string("What is your full name? ", 3)
-        phone_number = get_integer("What if your phone number? ")
+        phone_number = get_integer("What if your phone number? ", 9, 12)
         address = get_string("What is your address? ", 6)
         p.append(['delivery',name,phone_number, address])
         c.append(['delivery', 1, 3])
