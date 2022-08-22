@@ -1,13 +1,31 @@
-def get_integer(m, min_length, max_length):
+def get_integer(m, min_number, max_number):
     my_integer = 0
     while True:
         my_integer_question = input(m)
         try:
             my_integer = int(my_integer_question)
             # add in validation for mininum and maximum integer length
-            if len(my_integer_question) < min_length or len(my_integer_question) > max_length:
+            if my_integer < min_number or my_integer > max_number:
                 # print error message saying they have too long or too short in length
-                print(f'The number is less than {min_length} or longer than {max_length}')
+                print('The integer you have entered is out of range')
+            else:
+                break
+        except Exception as error:
+            # print error message for entering a character instead of an integer
+            print('You entered in an invalid character/s')
+
+    return my_integer
+
+def get_integer_length(m, min_length, max_length):
+    my_integer = 0
+    while True:
+        my_integer_question = input(m)
+        try:
+            my_integer = int(my_integer_question)
+            # add in validation for mininum and maximum integer length
+            if len(my_integer) < min_length or len(my_integer) > max_length:
+                # print error message saying they have too long or too short in length
+                print('The integer you have entered is out of range')
             else:
                 break
         except Exception as error:
@@ -37,16 +55,16 @@ def get_string(m, *length):
                 break
     return my_string
 
-def integer_in_array(c, question, min_length, max_length):
-    while True:
-        my_index = get_integer(question, min_length, max_length)
-        # check if index is less than index in the list
-        if len(c) < my_index:
-            # print error message
-            print("You entered an integer out of range, please enter a new integer")
-        else:
-            # if integer in the list then carry on
-            return my_index
+# def integer_in_array(c, question, min_length, max_length):
+#     while True:
+#         my_index = get_integer(question, min_length, max_length)
+#         # check if index is less than index in the list
+#         if len(c) < my_index:
+#             # print error message
+#             print("You entered an integer out of range, please enter a new integer")
+#         else:
+#             # if integer in the list then carry on
+#             return my_index
 
 def print_with_indexes(l):
     for i in range (0, len(l)):
@@ -60,8 +78,8 @@ def print_customer_list_indexes(c):
 
 def add_pasta(l, c):
     print_with_indexes(l)
-    pasta_index = integer_in_array(c, "Please enter the option number of pasta you want: ", 1, 1)
-    pasta_quantity = integer_in_array(c, "Please enter the quantity: ", 1, 5)
+    pasta_index = get_integer("Please enter the option number of pasta you want: ", 0, len(l)-1)
+    pasta_quantity = get_integer("Please enter the quantity(max of five pastas): ", 1, 5)
     customer_order = [l[pasta_index][0], pasta_quantity, l[pasta_index][1]]
     c.append(customer_order)
     print_customer_list_indexes(c)
@@ -77,52 +95,56 @@ def review_order(c):
         print("{} | {} | {} | {} ".format(x[0].rjust(30), str(x[1]).rjust(8), str(x[2]).rjust(10), str(sub_total).rjust(8)))
         # print("The sub-total for this section is ${}".format(sub_total))
         total += sub_total
-    print("----------------")
-    print("The total price for your order is${}".format(total))
-    print("")
+    print("------------------------------------------")
+    print(f"The total price for your order is ${total}\n")
+    # print("")
 
 
 def subtract_pasta(c):
     print_customer_list_indexes(c)
-    my_index = integer_in_array(c, "Choose index number to update the pasta quantity", 1, 1)
+    my_index = get_integer("Choose index number to update the pasta quantity: ", 0, len(c)-1)
     print()
     old_amount = c[my_index][1]
     while True:
-        number = get_integer("Enter how many you would like to remove:", 1, old_amount)
+        number = get_integer("Enter how many you would like to remove: ", 1, old_amount)
         if number > old_amount:
             print("Invalid number, you are unable to get rid of more pastas than you have ordered")
         else:
             break
     print()
-    new_amount = old_amount - number
-    print("{} - {} = {}, there are {} left in the order".format(old_amount, number, new_amount, new_amount))
+    if (old_amount - number) == 0:
+        print(f"Removing {c[my_index][0]} from the order")
+        del c[my_index]
+    else:
+        c[my_index][1] = old_amount - number
+        print(f"Item {c[my_index][0]} has {c[my_index][1]} left in the order")
     print()
-    output_message = "The number of {} {} has been updated to {}.".format(old_amount, c[my_index][0], new_amount)
-    print(output_message)
+    # output_message = "The number of {} {} has been updated to {}.".format(old_amount, c[my_index][0], new_amount)
+    # print(output_message)
 
 # edit the order function
-def edit_order(l):
-    print_with_indexes(l)
-    user_choice = get_integer("Please enter the index number to update the name: ", 1, 1)
-    #print(L[my_index])
+def edit_order(c):
+    print_customer_list_indexes(c)
+    user_choice = get_integer("Please enter the index number to update the pastas in your order: ", 1, len(c)-1)
+    # print(L[my_index])
     new_pasta = get_integer("Please enter the new quantity of pasta(max of 5): ", 1, 5)
-    old_pasta = l[user_choice][1]
-    l[user_choice][1] = new_pasta
-    #print(l [my_index][1])
-    output_message = "{} many has now been changed to {}".format(old_pasta, new_pasta)
+    old_pasta = c[user_choice][1]
+    c[user_choice][1] = new_pasta
+    # print(l [my_index][1])
+    output_message = "{} many pastas has now been changed to {}".format(old_pasta, new_pasta)
     print(output_message)
 
 def pickup_or_delivery(p, c):
     p_d = get_string("Would you like pick up or delivery? (P/D): ", 1, ['P', 'D']).upper()
     if p_d == "P":
         name = get_string("What is your full name? ", 3)
-        phone_number = get_integer("What if your phone number? ", 9, 12)
+        phone_number = get_integer_length("What if your phone number? ", 9, 12)
         p.append(['pickup', name, phone_number])
     elif p_d == "D":
         name = get_string("What is your full name? ", 3)
-        phone_number = get_integer("What if your phone number? ", 9, 12)
+        phone_number = get_integer_length("What if your phone number? ", 9, 12)
         address = get_string("What is your address? ", 6)
-        p.append(['delivery',name,phone_number, address])
+        p.append(['delivery', name, phone_number, address])
         c.append(['delivery', 1, 3])
 
 def main():
