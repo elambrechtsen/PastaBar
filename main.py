@@ -23,14 +23,14 @@ def get_integer_length(m, min_length, max_length):
         try:
             my_integer = int(my_integer_question)
             # add in validation for mininum and maximum integer length
-            if len(my_integer) < min_length or len(my_integer) > max_length:
+            if len(my_integer_question) < min_length or len(my_integer_question) > max_length:
                 # print error message saying they have too long or too short in length
-                print('The integer you have entered is out of range')
+                print(f'The integer you have entered is out of range {my_integer} min({min_length}) max({max_length})')
             else:
                 break
         except Exception as error:
             # print error message for entering a character instead of an integer
-            print('You entered in an invalid character/s')
+            print('You entered in an invalid character/s',error)
 
     return my_integer
 
@@ -50,7 +50,7 @@ def get_string(m, *length):
                     break
                 else:
                     # error message
-                    print('Wrong Value')
+                    print('Wrong Value entered')
             else:
                 break
     return my_string
@@ -75,6 +75,11 @@ def print_customer_list_indexes(c):
     for i in range (0, len(c)):
         output = " {:3} : {:10} : {:3} : ${:3}".format(i, c[i][0], c[i][1], c[i][2])
         print(output)
+
+def print_p_d_list_indexes(p):
+    for i in range (0, len(p)):
+        # output = " {:3} : {:10} : {:3} : ${:3}".format(i, p[i][0], p[i][1], p[i][2])
+        print(f"{p[i][0]} :       {p[i][1]} : {p[i][2]} : {p[i][3]}")
 
 def add_pasta(l, c):
     print_with_indexes(l)
@@ -101,6 +106,10 @@ def review_order(c):
 
 
 def subtract_pasta(c):
+    if len(c) == 0:
+        print("There are no items in the order")
+        print("returning to main menu")
+        return None
     print_customer_list_indexes(c)
     my_index = get_integer("Choose index number to update the pasta quantity: ", 0, len(c)-1)
     print()
@@ -124,10 +133,14 @@ def subtract_pasta(c):
 
 # edit the order function
 def edit_order(c):
+    if len(c) == 0:
+        print("There are no items in the order")
+        print("returning to main menu")
+        return None
     print_customer_list_indexes(c)
-    user_choice = get_integer("Please enter the index number to update the pastas in your order: ", 1, len(c)-1)
+    user_choice = get_integer("Please enter the index number to update the pastas in your order: ", 0, len(c)-1)
     # print(L[my_index])
-    new_pasta = get_integer("Please enter the new quantity of pasta(max of 5): ", 1, 5)
+    new_pasta = get_integer("Please enter the new quantity of pasta(max of 5): ", 0, 5)
     old_pasta = c[user_choice][1]
     c[user_choice][1] = new_pasta
     # print(l [my_index][1])
@@ -139,7 +152,7 @@ def pickup_or_delivery(p, c):
     if p_d == "P":
         name = get_string("What is your full name? ", 3)
         phone_number = get_integer_length("What if your phone number? ", 9, 12)
-        p.append(['pickup', name, phone_number])
+        p.append(['pickup', name, phone_number, ''])
     elif p_d == "D":
         name = get_string("What is your full name? ", 3)
         phone_number = get_integer_length("What if your phone number? ", 9, 12)
@@ -147,9 +160,23 @@ def pickup_or_delivery(p, c):
         p.append(['delivery', name, phone_number, address])
         c.append(['delivery', 1, 3])
 
+def confirm_order(c, p):
+    print_customer_list_indexes(c)
+    print_p_d_list_indexes(p)
+    order_complete = get_string("Are these the right order and details? (Y/N): ", 1, ['Y', 'N']).upper()
+    if order_complete == "Y":
+        new_order = get_string("Thank you for ordering would you like to order again? (Y/N): ", 1, ['Y', 'N']).upper()
+        if new_order == "Y":
+            c = []
+            p = []
+        elif new_order == "N":
+            print("Thank you for ordering")
+            exit(0)
+
+
 def main():
-    #customer_order = []
-    customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
+    customer_order = []
+    # customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
 
     pickup_delivery = []
 
@@ -172,6 +199,7 @@ def main():
         ["D", "Delete item from customer list"],
         ["E", "Edit order"],
         ["O", "Option for pick up or delivery"],
+        ["C", "Confirm order"],
         ["S", "Stop program"]
         ]
 
@@ -195,6 +223,8 @@ def main():
             edit_order(customer_order)
         elif user_choice == "O":
             pickup_or_delivery(pickup_delivery, customer_order)
+        elif user_choice == "C":
+            confirm_order(customer_order, pickup_delivery)
         elif user_choice == "S":
             exit(0)
     print("Thank you, the program has ended")
