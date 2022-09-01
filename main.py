@@ -28,17 +28,23 @@ def get_integer(m, min_number, max_number):
     return my_integer
 
 
-def get_integer_length(m, min_length, max_length):
+def get_integer_length(question, min_length, max_length):
     """
     Ask user to enter number
     Check minimum and maximum length
     return error if outside of range
     repeat question if answer was outside of range
     return answer if correct
+
+    :param question: The question to ask
+    :param min_length: Minimum length of expected answer
+    :param max_length: Maximum length of expected answer
+    :return: Answer to return
+
     """
     # my_integer = 0
     while True:
-        my_integer_question = input(m)
+        my_integer_question = input(question)
         try:
             my_integer = int(my_integer_question)
             # add in validation for mininum and maximum integer length
@@ -54,44 +60,60 @@ def get_integer_length(m, min_length, max_length):
     return my_integer
 
 
-def get_string(m, *length):
+def get_string(question, min_length, max_length, expected_answers):
     """
     Ask user to enter character
-    Check minimum and maximum length
-    return error if outside of range
-    repeat question if answer was outside of range
+    Check minimum length with the min_length variable
+    Check maximum length with the max_length variable
+    If the Min and Max length are null then accept any answer length
+    If there is a min_length and the answer is less than the minimum length
+    Or if there is a max_length and the answer is longer than the max_length
+    Send an error saying the length is shorter or longer than the expected length and repeat question
+    If there are expected answers then upper case the answer and check if the
+    answer is in the list of allowed answers
     return answer if correct
+
+    :param question: The question to ask
+    :param min_length: Minimum length of expected answer
+    :param max_length: Maximum length of expected answer
+    :param expected_answers: Expected answers in upper case
+    :return: Answer to return
     """
     # my_string = ""
 
     while True:
-        my_string = input(m)
-        if len(length) == 0:
+        my_string = input(question)
+        if not min_length and not max_length:
             break
         # put in minimum and maximum length
-        if len(length) > 0 and len(my_string) >= length[0]:
-            if len(length) > 1 and length[1]:
-                if my_string.upper() in length[1]:
-                    # If they have
+        if (min_length and len(my_string) < min_length) or \
+                (max_length and len(my_string) > max_length):
+            print(f'Response length {len(my_string)} outside minimum {min_length} or '
+                  f'maximum {max_length}')
+        else:
+            if expected_answers:
+                if my_string.upper() in expected_answers:
+                    # If they have the expected answer
                     break
                 else:
                     # error message
-                    print('Wrong Value entered')
+                    print('Wrong value entered')
             else:
                 break
     return my_string
 
 # def integer_in_array(c, question, min_length, max_length):
 #     while True:
-#         my_index = get_integer(question, min_length, max_length)
-#         # check if index is less than index in the list
-#         if len(c) < my_index:
-#             # print error message
+#        my_index = get_integer(question, min_length, max_length)
+#          # check if index is less than index in the list
+#          if len(c) < my_index:
+#              # print error message
 #             print("You entered an integer out of range, please enter a new integer")
-#         else:
-#             # if integer in the list then carry on
-#             return my_index
+#        else:
+#         return my_index
 
+
+# if integer in the list then carry on
 
 def get_name():
     """
@@ -194,7 +216,7 @@ def subtract_pasta(c):
     old_amount = c[my_index][1]
     # check if there enough pastas in the order to remove, error message if not
     while True:
-        number = get_integer("Enter how many you would like to remove: ", 1, old_amount)
+        number = get_integer("Enter how many you would like to remove: ", 0, old_amount)
         if number > old_amount:
             print("Invalid number, you are unable to get rid of more pastas than you have ordered")
         else:
@@ -231,7 +253,7 @@ def edit_order(c):
     new_pasta = get_integer("Please enter the new quantity of pasta(max of 5): ", 0, 5)
     old_pasta = c[user_choice][1]
     c[user_choice][1] = new_pasta
-    output_message = "{} many pastas has now been changed to {}".format(old_pasta, new_pasta)
+    output_message = "You had {} many pastas, it has now been changed to {}".format(old_pasta, new_pasta)
     print(output_message)
 
 
@@ -244,7 +266,7 @@ def pickup_or_delivery(p, c):
     add to pickup or delivery order
     if pickup
     """
-    p_d = get_string("Would you like pick up or delivery? (P/D): ", 1, ['P', 'D']).upper()
+    p_d = get_string("Would you like pick up or delivery? (P/D): ", 1, 1, ['P', 'D']).upper()
     p.clear()
     name = get_name()
     phone_number = get_integer_length("What if your phone number? ", 9, 12)
@@ -255,7 +277,7 @@ def pickup_or_delivery(p, c):
             if item[0] == 'delivery':
                 c.remove(item)
     elif p_d == "D":
-        address = get_string("What is your address? ", 6)
+        address = get_string("What is your address? ", 1, 6, [])
         p.append(['delivery', name, phone_number, address])
         # Check if order does not have a delivery
         has_delivery = False
@@ -278,10 +300,10 @@ def confirm_order(c, p):
     """
     print_customer_list_indexes(c)
     print_p_d_list_indexes(p)
-    order_complete = get_string("Are these the right order and details? (Y/N): ", 1, ['Y', 'N']).upper()
+    order_complete = get_string("Are these the right order and details? (Y/N): ", 1, 1, ['Y', 'N']).upper()
     # Check if answer is order complete
     if order_complete == "Y":
-        new_order = get_string("Thank you for ordering would you like to order again? (Y/N): ", 1, ['Y', 'N']).upper()
+        new_order = get_string("Thank you for ordering would you like to order again? (Y/N): ", 1, 1, ['Y', 'N']).upper()
         # Answer is yes to do a new order and then clear order
         if new_order == "Y":
             c.clear()
@@ -296,10 +318,10 @@ def main():
     """ Main program """
     # customer_order = []
     # Default list of pastas
-    # customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
+    customer_order = [['Rigatoni alla Caponata', 2, 21],["Conchilglie alla Bolognese", 7, 22]]
 
     # Create empty order and pickup/delivery list
-    customer_order = []
+    # customer_order = []
     pickup_delivery = []
 
     # List of pastas
@@ -333,7 +355,7 @@ def main():
         for x in option_list:
             output = "{} -- {} ".format(x[0], x[1])
             print(output)
-        user_choice = get_string("Please select an option: ->").upper()
+        user_choice = get_string("Please select an option: ->", 1, 1, ['V', 'A', 'R', 'D', 'E', 'O', 'C', 'S']).upper()
         # print(user_choice)
         if user_choice == "V":
             print(print_with_indexes(pasta_list))
